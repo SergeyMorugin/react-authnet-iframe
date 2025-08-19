@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 // CSS styles as objects to replace styled-components
-const containerStyles = {
+const containerStyles: React.CSSProperties = {
   width: '100%',
 }
 
-const acceptUIContainerStyles = {
+const acceptUIContainerStyles: React.CSSProperties = {
   position: 'relative',
   width: '100%',
   maxWidth: '600px',
@@ -15,14 +15,14 @@ const acceptUIContainerStyles = {
   transition: 'height 0.3s ease-in-out',
 }
 
-const iframeStyles = {
+const iframeStyles: React.CSSProperties = {
   width: '100%',
   height: '100%',
   border: 'none',
   overflow: 'hidden',
 }
 
-const closeButtonHiderStyles = {
+const closeButtonHiderStyles: React.CSSProperties = {
   width: '40px',
   height: '40px',
   position: 'absolute',
@@ -34,15 +34,39 @@ const closeButtonHiderStyles = {
 export const PRODUCTION = 'PRODUCTION'
 export const SANDBOX = 'SANDBOX'
 
-const AuthnetFrame = ({
+interface BillingAddressOptions {
+  show: boolean
+  required: boolean
+}
+
+interface PaymentOptions {
+  showCreditCard: boolean
+  showBankAccount: boolean
+}
+
+interface AuthnetFrameProps {
+  billingAddressOptions?: BillingAddressOptions
+  paymentOptions?: PaymentOptions
+  apiLoginID: string
+  clientKey: string
+  acceptUIFormBtnTxt?: string
+  acceptUIFormHeaderTxt?: string
+  onSubmit?: (response: any) => void
+  onError?: (error: any) => void
+  onClose?: () => void
+  environment?: 'PRODUCTION' | 'SANDBOX'
+}
+
+const AuthnetFrame: React.FC<AuthnetFrameProps> = ({
   billingAddressOptions = { show: false, required: true },
   paymentOptions = { showCreditCard: true, showBankAccount: false },
   apiLoginID,
   clientKey,
   acceptUIFormBtnTxt = 'Pay Now',
   acceptUIFormHeaderTxt = 'Payment',
-  onSubmit = (r) => console.log('AuthnetFrame response:', r),
-  onError = (e) => console.error('AuthnetFrame error:', e),
+  onSubmit = (r: any) => console.log('AuthnetIFrame response:', r),
+  onError = (e: any) => console.error('AuthnetIFrame error:', e),
+  onClose = () => console.log('AuthnetIFrame onClose'),
   environment = SANDBOX,
 }) => {
   const IFRAME_HEIGHT = 400
@@ -53,9 +77,9 @@ const AuthnetFrame = ({
 
   const [iframeHeight, setIframeHeight] = useState(IFRAME_HEIGHT)
 
-  const containerRef = useRef(null)
-  const iframeRef = useRef(null)
-  const resizeHandlerRef = useRef(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const resizeHandlerRef = useRef<(() => void) | null>(null)
 
   const isMobileDevice = useCallback(() => {
     const ua = navigator.userAgent
@@ -81,14 +105,14 @@ const AuthnetFrame = ({
   }, [iframeHeight, isMobileDevice])
 
   const createThrottledResize = useCallback(() => {
-    let timeout
+    let timeout: NodeJS.Timeout
     return () => {
       if (timeout) clearTimeout(timeout)
       timeout = setTimeout(updateContainerLayout, 30)
     }
   }, [updateContainerLayout])
 
-  const responseHandler = useCallback((response) => {
+  const responseHandler = useCallback((response: any) => {
     if (response?.messages?.resultCode === 'Error') {
       onError(response.messages)
     } else {
@@ -96,7 +120,7 @@ const AuthnetFrame = ({
     }
   }, [onSubmit, onError])
 
-  const sendMessageToIframe = useCallback((data, messageType) => {
+  const sendMessageToIframe = useCallback((data: any, messageType: string) => {
     if (!iframeRef.current) return
 
     const message = {
@@ -106,13 +130,15 @@ const AuthnetFrame = ({
     }
 
     try {
-      iframeRef.current.contentWindow.postMessage(message, IFRAME_BASE_URL)
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage(message, IFRAME_BASE_URL)
+      }
     } catch (error) {
       console.error('Error sending message to iframe:', error)
     }
   }, [IFRAME_BASE_URL])
 
-  const handlePostMessage = useCallback((event) => {
+  const handlePostMessage = useCallback((event: MessageEvent) => {
     if (
       event.origin !== IFRAME_BASE_URL ||
       !event.data ||
@@ -149,7 +175,7 @@ const AuthnetFrame = ({
         break
 
       case 'CLOSE_IFRAME':
-        closePaymentForm()
+        onClose()
         break
 
       default:
@@ -165,10 +191,8 @@ const AuthnetFrame = ({
     responseHandler,
     sendMessageToIframe,
     IFRAME_BASE_URL,
-    closePaymentForm,
+    onClose,
   ])
-
-  const closePaymentForm = useCallback(() => {}, [])
 
   const getIframeUrl = useCallback(() => {
     const messageData = {
@@ -201,7 +225,7 @@ const AuthnetFrame = ({
     updateContainerLayout()
   }, [iframeHeight, updateContainerLayout])
 
-  const dynamicContainerStyles = {
+  const dynamicContainerStyles: React.CSSProperties = {
     ...acceptUIContainerStyles,
     height: `${iframeHeight}px`,
   }
