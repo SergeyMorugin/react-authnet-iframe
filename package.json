@@ -1,6 +1,6 @@
 {
   "name": "react-authnet-iframe",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight, modern React implementation of Authorize.net's Accept.JS library with embedded iframe functionality",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
