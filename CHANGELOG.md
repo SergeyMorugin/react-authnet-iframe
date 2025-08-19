@@ -47,3 +47,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Jest testing framework with comprehensive test coverage
 - ESLint configuration for code quality
 - TypeScript-ready exports
+

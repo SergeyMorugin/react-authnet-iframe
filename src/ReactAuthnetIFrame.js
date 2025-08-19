@@ -1,37 +1,35 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
 
-const Container = styled.div`
-    width: 100%;
+// CSS styles as objects to replace styled-components
+const containerStyles = {
+  width: '100%',
+}
 
-    .AcceptUIContainer {
-        position: relative;
-        width: 100%;
-        max-width: 600px;
-        margin: 20px auto;
-        overflow: hidden;
-        background-color: #ffffff;
-        transition: height 0.3s ease-in-out;
-    }
+const acceptUIContainerStyles = {
+  position: 'relative',
+  width: '100%',
+  maxWidth: '600px',
+  margin: '20px auto',
+  overflow: 'hidden',
+  backgroundColor: '#ffffff',
+  transition: 'height 0.3s ease-in-out',
+}
 
-    iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
-        overflow: hidden;
-    }
+const iframeStyles = {
+  width: '100%',
+  height: '100%',
+  border: 'none',
+  overflow: 'hidden',
+}
 
-    .error-text {
-    }
-    .close-button-hider {
-        width: 40px;
-        height: 40px;
-        position: absolute;
-        background-color: white;
-        right: 0px;
-        top: 0px;
-    }
-`
+const closeButtonHiderStyles = {
+  width: '40px',
+  height: '40px',
+  position: 'absolute',
+  backgroundColor: 'white',
+  right: '0px',
+  top: '0px',
+}
 
 export const PRODUCTION = 'PRODUCTION'
 export const SANDBOX = 'SANDBOX'
@@ -203,16 +201,17 @@ const AuthnetFrame = ({
     updateContainerLayout()
   }, [iframeHeight, updateContainerLayout])
 
-  const containerStyles = {
+  const dynamicContainerStyles = {
+    ...acceptUIContainerStyles,
     height: `${iframeHeight}px`,
   }
 
   return (
-    <Container>
+    <div style={containerStyles}>
       <div
         ref={containerRef}
         id={CONTAINER_ID}
-        style={containerStyles}
+        style={dynamicContainerStyles}
       >
         <iframe
           id="react-authnet-iframe"
@@ -221,10 +220,11 @@ const AuthnetFrame = ({
           title="Payment Form"
           allow="payment"
           sandbox="allow-scripts allow-same-origin allow-forms allow-top-navigation"
+          style={iframeStyles}
         />
-        <div className="close-button-hider"></div>
+        <div style={closeButtonHiderStyles}></div>
       </div>
-    </Container>
+    </div>
   )
 }
 

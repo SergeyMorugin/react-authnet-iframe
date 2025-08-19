@@ -25,3 +25,4 @@ try {
   console.error('❌ Package build verification failed:', error.message);
   process.exit(1);
 }
+
