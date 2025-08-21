@@ -72,7 +72,7 @@ const AuthnetFrame: React.FC<AuthnetFrameProps> = ({
   const IFRAME_HEIGHT = 400
   const CONTAINER_ID = 'AcceptUIContainer'
   const IFRAME_BASE_URL = environment === PRODUCTION
-    ? 'https://js.authorize.net/'
+    ? 'https://js.authorize.net'
     : 'https://jstest.authorize.net'
 
   const [iframeHeight, setIframeHeight] = useState(IFRAME_HEIGHT)
